@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<html lang="zh">
-<head>
-  <meta charset="UTF-8" />
+<html lang="zh" data-page-node-id="klCKOQvfGrS1rLdSvfKIAC" data-dm-ref="1"><head data-page-node-id="2t5PNjeJwh339MKPajKtwU">
+  <meta charset="UTF-8" data-page-node-id="6ZiegsGgNwdw3Adqzw1jwJ">
   <title>皮卡丘的音乐站 - Pikachu Music</title>
-  <meta name="referrer" content="no-referrer" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="no-referrer" data-page-node-id="fnOO3lgsqUXGj7MLYLId9w">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="fO9V6eUGLF9d4sWKJf98W1">
   <!-- 圆润可爱字体 -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" data-page-node-id="quMXPYOWJ9Fd2Rb1g0IH7l">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" data-page-node-id="siaVWDmoqyjLoGHOaUNCwM">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&amp;family=Nunito:wght@400;600&amp;display=swap" rel="stylesheet" data-page-node-id="8gHFUHalFPIX8rR1etP3xb">
   <style>
     :root {
       --bg-dark: #02030a;
@@ -60,7 +59,8 @@
       z-index: 1;
       display: flex;
       flex-direction: column;
-      height: calc(100vh - 104px);
+      /* 修复：上下 margin 各 44px，合计 88px，原来减 104px 会多留 16px 空白 */
+      height: calc(100vh - 88px);
       margin: 44px 80px;
       padding: 10px 12px;
       gap: 10px;
@@ -75,7 +75,8 @@
         0 0 120px rgba(136,196,255,0.35);
     }
     @media (max-width: 1280px) {
-      .app { margin: 32px 40px; height: calc(100vh - 70px); }
+      /* 修复：margin 32px 上下共 64px */
+      .app { margin: 32px 40px; height: calc(100vh - 64px); }
     }
     @media (max-width: 900px) {
       .app { margin: 16px; height: calc(100vh - 32px); }
@@ -131,6 +132,14 @@
       border-radius: 50%;
       object-fit: cover;
     }
+    /* 修复：pikachu.gif 缺失时不再显示裂图，回退成一个 ⚡ 图标 */
+    .pikachu-fallback {
+      display: none;
+      font-size: 30px;
+      line-height: 1;
+      filter: drop-shadow(0 0 6px rgba(255,228,140,0.95));
+    }
+    .pikachu-box.no-img .pikachu-fallback { display: flex; }
     @keyframes pika-float {
       0%,100% { transform: translateY(0); }
       50%     { transform: translateY(-5px); }
@@ -598,6 +607,12 @@
       color:var(--accent-green);
       background:rgba(13,82,60,0.8);
     }
+    /* 修复：320K / 192K 等有损音质不该套用"无损"的绿色样式 */
+    .lossless-pill.normal {
+      border-color:rgba(140,205,255,0.6);
+      color:var(--accent-blue);
+      background:rgba(12,52,92,0.8);
+    }
 
     .player-actions {
       display:flex;
@@ -652,6 +667,7 @@
     .progress-handle {
       position:absolute;
       top:50%;
+      left:0; /* 修复：原来没有初始 left，位置不确定 */
       width:10px; height:10px;
       border-radius:50%;
       background:#fffbe3;
@@ -958,6 +974,20 @@
       border-color:var(--accent);
       box-shadow:0 0 14px rgba(245,200,76,0.9);
     }
+    /* 新增：接口拿不到播放地址的曲目标识 */
+    .track-item.unavailable,
+    .search-mini-item.unavailable {
+      opacity:.55;
+    }
+    .no-audio-badge {
+      margin-left:4px;
+      padding:0 5px;
+      border-radius:999px;
+      font-size:9px;
+      color:#ffd0a0;
+      border:1px solid rgba(255,180,120,0.5);
+      background:rgba(90,45,10,0.65);
+    }
     .track-index {
       width:22px;
       text-align:right;
@@ -1225,291 +1255,282 @@
       }
     }
   </style>
-</head>
-<body>
-  <canvas id="bg-canvas"></canvas>
+<style id="__dm_no_drag_style__">* { -webkit-user-drag: none !important; }</style><style id="__dm_bindable_badge_style__">[data-sp-bindable="database"]{outline:1px dashed #0088ff;outline-offset:2px;border-radius:4px;}[data-sp-bindable="database"] *{pointer-events:none !important;transition:none !important;animation:none !important;}[data-sp-bindable="database"]{transition:none !important;animation:none !important;}</style></head>
+<body data-page-node-id="bc5TJP9skdno9htGqfyMqG" style="">
+  <canvas id="bg-canvas" data-page-node-id="He0jVYpS7jmU9cDef8vfnp" width="497" height="717"></canvas>
 
-  <div class="app">
-    <header class="ripple-target">
-      <div class="logo-area">
-        <div class="pikachu-box ripple-target">
-          <!-- 请放一张你喜欢的 pikachu.gif 到同目录 -->
-          <img src="pikachu.gif" alt="Pikachu" class="pikachu-img">
+  <div class="app" data-page-node-id="lQZinl2EvWFDWNhSwzfBs8">
+    <header class="ripple-target" data-page-node-id="Cj8oT7qco97WDkYTKcYJGb">
+      <div class="logo-area" data-page-node-id="sD7kmm0uXusan9WqUouXEZ">
+        <div class="pikachu-box ripple-target no-img" data-page-node-id="gcuEhF8PVzBi3zJgTaAQCX">
+          <!-- 可选：放一张 pikachu.gif 到同目录；若文件不存在会自动回退成 ⚡ 图标，不再显示裂图 -->
+          <img src="pikachu.gif" alt="Pikachu" class="pikachu-img" onerror="this.style.display='none';this.parentNode.classList.add('no-img');" data-page-node-id="286FZ3K8NMmhStyQJHbe8z" style="display: none;">
+          <span class="pikachu-fallback" aria-hidden="true" data-page-node-id="jLLiMDP5z0qsl5CVnkLyj9">⚡</span>
         </div>
-        <div class="title-text">
-          <h1 data-i18n="appTitle">皮卡丘的音乐站</h1>
-          <p data-i18n="authorLabel">作者：Zhenchao Jin + GPT 5.1</p>
+        <div class="title-text" data-page-node-id="jO1OaKcr76o03uiQapZw7r">
+          <h1 data-i18n="appTitle" data-page-node-id="3s0Y2QCiKNQxV0mQaxrcUX" style="">十三不搭的音乐站</h1>
+          <p data-i18n="authorLabel" data-page-node-id="ivbmGeGkEHvP8XOsGxQfbQ" style="white-space: pre-wrap; cursor: text;">原作者：Zhenchao Jin + GPT 5.1</p>
         </div>
       </div>
-      <div class="header-controls">
-        <div class="lang-toggle ripple-target">
-          <button class="lang-btn active" data-lang="zh">中</button>
-          <button class="lang-btn" data-lang="en">EN</button>
+      <div class="header-controls" data-page-node-id="LD01ZvJujdc4Xi5b7RpfSR">
+        <div class="lang-toggle ripple-target" data-page-node-id="lm0C5kPR1hSDf0EiAYUb5f">
+          <button class="lang-btn active" data-lang="zh" data-page-node-id="QFHVZLyIzNTYcXQ6AFFGbT">中</button>
+          <button class="lang-btn" data-lang="en" data-page-node-id="ORv08PjECmYjW2r3EqJEui">EN</button>
         </div>
-        <div class="shortcut-hint" data-i18n="shortcutHint">
-          快捷键：Space 播放/暂停 · ←/→ 跳转 · ↑/↓ 音量 · N/P 切歌 · F 收藏 · L 切换歌词效果
-        </div>
-        <button id="shortcut-toggle-btn" class="shortcut-toggle-btn ripple-target" title="快捷键说明">⌨️</button>
+        <div class="shortcut-hint" data-i18n="shortcutHint" data-page-node-id="qqGE9fAuzqocl4zuQoJCgW">快捷键：Space 播放/暂停 · ←/→ 跳转 · ↑/↓ 音量 · N/P 切歌 · F 收藏 · L 切换歌词效果</div>
+        <button id="shortcut-toggle-btn" class="shortcut-toggle-btn ripple-target" title="快捷键说明" data-page-node-id="3i0Xz6FdDcK0bsaWyy2G92">⌨️</button>
       </div>
     </header>
 
-    <main class="layout">
+    <main class="layout" data-page-node-id="Mccc1TLTSAP5YHiCdECoe5">
       <!-- 左：搜索 -->
-      <section class="panel search-panel ripple-target">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span class="icon">🔍</span>
-            <span data-i18n="searchTitle">歌曲搜索</span>
+      <section class="panel search-panel ripple-target" data-page-node-id="cfUM04yAiHLhTF2Ln0CkH1">
+        <div class="panel-header" data-page-node-id="1ZkRvbYwlhNgE7LO2pOQd9">
+          <div class="panel-title" data-page-node-id="RbE6uxO6IY1vcwTddRgniB">
+            <span class="icon" data-page-node-id="XBOosdH6V6ns49rgjll4Qh">🔍</span>
+            <span data-i18n="searchTitle" data-page-node-id="ncNrdDInOrXDjRJIUQB3PK">歌曲搜索</span>
           </div>
-          <span class="chip" data-i18n="searchSubtitle">支持网易云 / QQ / 酷我 / JOOX</span>
+          <span class="chip" data-i18n="searchSubtitle" data-page-node-id="WzAKiCXkVIQTbeEPQvWxfr">支持网易云 / QQ / 酷我 / JOOX</span>
         </div>
-        <div class="search-panel-content">
-          <div class="search-row ripple-target">
-            <span class="search-prefix">🔍</span>
-            <input id="search-input" class="input" type="text"
-                   placeholder="输入歌名 / 歌手，回车搜索…" />
-            <button id="search-btn" class="btn ripple-target" data-i18n="searchButton">搜索</button>
+        <div class="search-panel-content" data-page-node-id="9wrhItOpUeueDNUJlWZBIq">
+          <div class="search-row ripple-target" data-page-node-id="BgNLPSGHXMU358fMAq8T6W">
+            <span class="search-prefix" data-page-node-id="bTZIPmQROGQtdgSVOYLHGY">🔍</span>
+            <input id="search-input" class="input" type="text" placeholder="输入歌名 / 歌手，回车搜索…" data-page-node-id="iHyLbyppoIv5ZTdnxBDTmq">
+            <button id="search-btn" class="btn ripple-target" data-i18n="searchButton" data-page-node-id="eBBODLowF9WED3nxxMwi2f">搜索</button>
           </div>
 
-          <div class="source-row">
-            <label class="source-chip ripple-target">
-              <span class="source-dot netease"></span>
-              <input type="checkbox" data-source="netease" checked />
-              <span>网易云</span>
+          <div class="source-row" data-page-node-id="5ShSDKMpqlo1i4Y8unt2ds">
+            <label class="source-chip ripple-target" data-page-node-id="CQKcLNVnzp0OeyK96MAKLa">
+              <span class="source-dot netease" data-page-node-id="IebxwxpnzK2suACnY9vmhq"></span>
+              <input type="checkbox" data-source="netease" checked="" data-page-node-id="Hx1NIDLyEwG1EeXdzLSGKo">
+              <span data-page-node-id="M0jlvcgHibc1k6CWvF392e">网易云</span>
             </label>
-            <label class="source-chip ripple-target">
-              <span class="source-dot qq"></span>
-              <input type="checkbox" data-source="qq" checked />
-              <span>QQ</span>
+            <label class="source-chip ripple-target" data-page-node-id="BtZ6rvM7u6pkH6BtWhlWZh">
+              <span class="source-dot qq" data-page-node-id="lvp5aeB7dxkiqFWpkxiCD3"></span>
+              <input type="checkbox" data-source="qq" checked="" data-page-node-id="HSjbTLmkzgQK6WnWwv5dWT">
+              <span data-page-node-id="6jYVukKU2shos0lHKE9O1s">QQ</span>
             </label>
-            <label class="source-chip ripple-target">
-              <span class="source-dot kuwo"></span>
-              <input type="checkbox" data-source="kuwo" checked />
-              <span>酷我</span>
+            <label class="source-chip ripple-target" data-page-node-id="jmS6sqfXwwpme30QM1un9C">
+              <span class="source-dot kuwo" data-page-node-id="QLXQhNGFKNnkv7KyOqotyM"></span>
+              <input type="checkbox" data-source="kuwo" checked="" data-page-node-id="WbZYWaDPCZrsAqTGFTQXZJ">
+              <span data-page-node-id="Ggk2EMd6HSaJiBbHhUncFl">酷我</span>
             </label>
-            <label class="source-chip ripple-target">
-              <span class="source-dot joox"></span>
-              <input type="checkbox" data-source="joox" />
-              <span>JOOX</span>
+            <label class="source-chip ripple-target" data-page-node-id="kcR7bXiXwCLVupHRxAcqbD">
+              <span class="source-dot joox" data-page-node-id="7ZEGxmE8fQ6jnhY9rFF8Ep"></span>
+              <input type="checkbox" data-source="joox" data-page-node-id="GpcDDRMgObAzI0Jl8WcAQ9">
+              <span data-page-node-id="oUpFPWtTtTOIT4KtqX2xut">JOOX</span>
             </label>
           </div>
 
-          <div class="limit-row">
-            <span data-i18n="perSourceCount">每个源加载</span>
-            <select id="limit-select">
-              <option value="5">5</option>
-              <option value="10" selected>10</option>
-              <option value="20">20</option>
-              <option value="30">30</option>
+          <div class="limit-row" data-page-node-id="POJ1pfYJHMQ77eNHNabpna">
+            <span data-i18n="perSourceCount" data-page-node-id="tuE8wo3pOeOnoiDfhB0jCF">每个源加载</span>
+            <select id="limit-select" data-page-node-id="CIPbw0WGJ93HDB778BUqfI">
+              <option value="5" data-page-node-id="iqryylznicepKQlIzrNMYL">5</option>
+              <option value="10" selected="" data-page-node-id="RWBbPd7pCazH0AXDQ4N0lR">10</option>
+              <option value="20" data-page-node-id="3eik5SAgZh2ghHSwRCWGBR">20</option>
+              <option value="30" data-page-node-id="YDvZ1veq7TUOYBAsXR4k4B">30</option>
             </select>
-            <span data-i18n="perSourceCountTail">首结果</span>
-            <button id="load-more-btn" class="btn btn-secondary ripple-target" data-i18n="loadMore">
-              加载更多
-            </button>
+            <span data-i18n="perSourceCountTail" data-page-node-id="tL6yvYlLnx9rmiegIHXAiW">首结果</span>
+            <button id="load-more-btn" class="btn btn-secondary ripple-target" data-i18n="loadMore" data-page-node-id="QdZsdSSENqFzaRIZRetfE4">加载更多</button>
           </div>
 
-          <div class="search-stats">
-            <span id="search-status" data-i18n="searchStatusIdle">尚未搜索，试试输入“林俊杰”？</span>
-            <span id="search-count">0</span>
+          <div class="search-stats" data-page-node-id="kNHbUDAkjY3W1xHL6G7ehq">
+            <span id="search-status" data-i18n="searchStatusIdle" data-page-node-id="oLEHJfJpMUzrBSymyLayIw">尚未搜索，试试输入“林俊杰”？</span>
+            <span id="search-count" data-page-node-id="wV3jHDGEHBgWZdJPbL20zp">0</span>
           </div>
 
-          <div id="search-mini-list" class="search-results-mini"></div>
+          <div id="search-mini-list" class="search-results-mini" data-page-node-id="3NvFnoaJEe6sFgpES1vP6H"></div>
         </div>
       </section>
 
       <!-- 中：播放器 -->
-      <section class="panel player-panel ripple-target">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span class="icon">🎧</span>
-            <span data-i18n="playerTitle">正在播放</span>
+      <section class="panel player-panel ripple-target" data-page-node-id="EaSeLx2fFe0jGRGsPc3XQ4">
+        <div class="panel-header" data-page-node-id="S40sdBXd9FwzrznhjiAgYp">
+          <div class="panel-title" data-page-node-id="w1ZF2B4Eu5LKiHvMntBQum">
+            <span class="icon" data-page-node-id="EOThbnSoxoGZjv7Bvvk4QH">🎧</span>
+            <span data-i18n="playerTitle" data-page-node-id="AgH8aqirc8IJHSuUc1rqGe">正在播放</span>
           </div>
-          <span class="chip" data-i18n="playerSubtitle">歌词动态高亮 · 炫酷霓虹</span>
+          <span class="chip" data-i18n="playerSubtitle" data-page-node-id="sursU8IZYIbGEBmXLvANpd">歌词动态高亮 · 炫酷霓虹</span>
         </div>
 
-        <div class="player-top">
-          <div class="cover-wrapper">
-            <img id="cover-img" src="" alt="cover" />
-            <div class="cover-placeholder">
-              <div class="cover-disc"></div>
-              <div data-i18n="coverHint">搜索并播放一首歌吧！</div>
+        <div class="player-top" data-page-node-id="FRDerDblCGSbaYeaBs3Qae">
+          <div class="cover-wrapper" data-page-node-id="tZ4jQq3AdLqFjbTcofgodK">
+            <!-- 修复：空 src="" 会让浏览器把当前页面当成图片去请求一次，这里直接留空由 JS 赋值 -->
+            <img id="cover-img" alt="cover" data-page-node-id="kysFaHlBwbYyVC2vF5NCIr">
+            <div class="cover-placeholder" data-page-node-id="QiVjzYedYapT2SDdHDFomI">
+              <div class="cover-disc" data-page-node-id="BnIOTbeKE9QREa69jpJjd0"></div>
+              <div data-i18n="coverHint" data-page-node-id="CsS4F7sX1VCuvl8KPFcdgE">搜索并播放一首歌吧！</div>
             </div>
           </div>
-          <div class="player-main">
-            <div class="track-title-row">
-              <div class="track-text">
-                <div id="track-title" class="track-title">暂未选择歌曲</div>
-                <div id="track-artist" class="track-artist"></div>
-                <div class="track-tags">
-                  <span id="track-source-pill" class="source-pill" style="display:none;"></span>
-                  <span id="track-quality-pill" class="lossless-pill" style="display:none;">LOSSLESS</span>
+          <div class="player-main" data-page-node-id="DVGDB0Ay637hpKQHnidSKK">
+            <div class="track-title-row" data-page-node-id="BjSPMCrZmJpWIKlP3zjkm3">
+              <div class="track-text" data-page-node-id="ggaGFSDHJeecm22V1hJHnb">
+                <div id="track-title" class="track-title" data-page-node-id="ak8F0384Qla9Cn6hrUZdZq">暂未选择歌曲</div>
+                <div id="track-artist" class="track-artist" data-page-node-id="IPwI9Mu3tERCOrfB85DfD6"></div>
+                <div class="track-tags" data-page-node-id="PEDZMgyVxPiJB5Ea52Ts4u">
+                  <span id="track-source-pill" class="source-pill" style="display:none;" data-page-node-id="zEPot30jnx2Ql99oq4DDGW"></span>
+                  <span id="track-quality-pill" class="lossless-pill" style="display:none;" data-page-node-id="n8MqvWLACghloqNlJlzaPE">LOSSLESS</span>
                 </div>
               </div>
-              <div class="player-actions">
-                <div class="player-btn-row">
-                  <button id="fav-btn" class="btn btn-secondary btn-icon ripple-target" title="收藏 (F)">❤</button>
-                  <button id="download-btn" class="btn btn-secondary btn-icon ripple-target" title="下载">⬇</button>
+              <div class="player-actions" data-page-node-id="a8lpSelESyivk99sQpy5Er">
+                <div class="player-btn-row" data-page-node-id="BH7rm33n0YOtYUYOgr1nLh">
+                  <button id="fav-btn" class="btn btn-secondary btn-icon ripple-target" title="收藏 (F)" data-page-node-id="VMtULZjUXs9JbQJkmOAWZD">❤</button>
+                  <button id="download-btn" class="btn btn-secondary btn-icon ripple-target" title="下载" data-page-node-id="mmdd5FQ0jREDAvbXvBq15h">⬇</button>
                 </div>
-                <div id="player-status" class="status-pill" data-i18n="playerStatusIdle">空闲</div>
+                <div id="player-status" class="status-pill" data-i18n="playerStatusIdle" data-page-node-id="3dE3epsqDc5FHVLF8KE3ua">空闲</div>
               </div>
             </div>
 
-            <div class="player-controls">
-              <div class="progress-row">
-                <span id="current-time" class="progress-time">00:00</span>
-                <div id="progress-bar-wrapper" class="progress-bar-wrapper ripple-target">
-                  <div id="progress-bar" class="progress-bar"></div>
-                  <div id="progress-handle" class="progress-handle"></div>
+            <div class="player-controls" data-page-node-id="VjBHtL3kRz6AzVElYsFmQ6">
+              <div class="progress-row" data-page-node-id="m8mKJwfsUyx5JbtD3i76A0">
+                <span id="current-time" class="progress-time" data-page-node-id="IaaykZxdP5DQk9LE8ZvESD">00:00</span>
+                <div id="progress-bar-wrapper" class="progress-bar-wrapper ripple-target" data-page-node-id="FLiiLBvxdiHT8FmvZLrFtJ">
+                  <div id="progress-bar" class="progress-bar" data-page-node-id="fSgDwgy9qWrq6JQiZrFNS1"></div>
+                  <div id="progress-handle" class="progress-handle" data-page-node-id="H24DYvdsOumrowaw8AcjvV"></div>
                 </div>
-                <span id="total-time" class="progress-time">00:00</span>
+                <span id="total-time" class="progress-time" data-page-node-id="ZN32ttdTHQjL68RH89sj0L">00:00</span>
               </div>
-              <div class="control-row">
-                <div class="control-main">
-                  <button id="prev-btn" class="btn btn-secondary btn-icon ripple-target" title="上一首 (P)">⏮</button>
-                  <button id="play-btn" class="btn play-btn ripple-target" title="播放/暂停 (Space)">▶</button>
-                  <button id="next-btn" class="btn btn-secondary btn-icon ripple-target" title="下一首 (N)">⏭</button>
+              <div class="control-row" data-page-node-id="rEgmOIkVOu4Ntmxvj3aPRT">
+                <div class="control-main" data-page-node-id="HWBmW38lZ921RiRosjC9Gt">
+                  <button id="prev-btn" class="btn btn-secondary btn-icon ripple-target" title="上一首 (P)" data-page-node-id="m1VOdCH58bkCBbQjBuB7If">⏮</button>
+                  <button id="play-btn" class="btn play-btn ripple-target" title="播放/暂停 (Space)" data-page-node-id="lpAgHTaW8rCkILje4gpHYj">▶</button>
+                  <button id="next-btn" class="btn btn-secondary btn-icon ripple-target" title="下一首 (N)" data-page-node-id="qDwo3oykihXNVhTzZ7EUE5">⏭</button>
                 </div>
-                <div class="control-secondary">
-                  <span>🔊</span>
-                  <input id="volume-slider" class="volume-slider" type="range" min="0" max="1" step="0.01" value="0.8" />
+                <div class="control-secondary" data-page-node-id="Om8O6dFV6auWf68JBp9gMc">
+                  <span data-page-node-id="TyFVQhfPjhgzM42aNgewuC">🔊</span>
+                  <input id="volume-slider" class="volume-slider" type="range" min="0" max="1" step="0.01" value="0.8" data-page-node-id="9wIT1Dqpk51E60Xw0M7SSn">
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="lyrics-container">
-          <div id="lyrics-inner" class="lyrics-inner">
-            <div id="lyrics-empty" class="lyrics-empty" data-i18n="lyricsEmpty">
-              暂无歌词，试着播放一首支持歌词的歌曲。
             </div>
           </div>
         </div>
 
-        <audio id="audio" preload="metadata"></audio>
+        <div class="lyrics-container" data-page-node-id="Ji9OkHyMJYdYtzxFiUv6EY">
+          <div id="lyrics-inner" class="lyrics-inner" data-page-node-id="ql7NL87ecPDJvcaSWUGDo7">
+            <div id="lyrics-empty" class="lyrics-empty" data-i18n="lyricsEmpty" data-page-node-id="yLmyEbZTk9S2n4HnClQf6N">暂无歌词，试着播放一首支持歌词的歌曲。</div>
+          </div>
+        </div>
+
+        <audio id="audio" preload="metadata" data-page-node-id="U6oNMC5ZoBZFW7LSv5BEAv"></audio>
       </section>
 
       <!-- 右：播放列表 -->
-      <section class="panel playlist-panel ripple-target">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span class="icon">📜</span>
-            <span data-i18n="playlistTitle">播放列表</span>
+      <section class="panel playlist-panel ripple-target" data-page-node-id="7BCdAhoFySaaaoQkPAQbOZ">
+        <div class="panel-header" data-page-node-id="rLh9cAqcLW67s2rQo9ZupG">
+          <div class="panel-title" data-page-node-id="n8RvDP5l0k0XCNKWP9BZTo">
+            <span class="icon" data-page-node-id="A99wLUHUOP1lc5QCXVXAiK">📜</span>
+            <span data-i18n="playlistTitle" data-page-node-id="LTVtcIERIMhAe1zhOIjXHj">播放列表</span>
           </div>
-          <div class="playlist-tabs ripple-target">
-            <div class="playlist-tab active" data-tab="results" data-i18n="tabResults">搜索结果</div>
-            <div class="playlist-tab" data-tab="favorites" data-i18n="tabFavorites">我的收藏</div>
-            <div class="playlist-tab" data-tab="playlists" data-i18n="tabCustomLists">自建歌单</div>
+          <div class="playlist-tabs ripple-target" data-page-node-id="8uRD8Uj75lzhoTw0dB1Bbq">
+            <div class="playlist-tab active" data-tab="results" data-i18n="tabResults" data-page-node-id="qcT2mSASFqDurwYibMwGUr">搜索结果</div>
+            <div class="playlist-tab" data-tab="favorites" data-i18n="tabFavorites" data-page-node-id="G0rigGTixq4fd6d4hcjHxX">我的收藏</div>
+            <div class="playlist-tab" data-tab="playlists" data-i18n="tabCustomLists" data-page-node-id="t2katNyzFLaJaBwpWmB4rZ">自建歌单</div>
           </div>
         </div>
 
-        <div class="playlist-main">
-          <div class="playlist-bar">
-            <div class="playlist-top-row">
-              <span id="playlist-info" class="playlist-info"></span>
-              <div class="playmode-row">
-                <button class="playmode-btn active ripple-target" data-mode="list" title="列表循环">🔁</button>
-                <button class="playmode-btn ripple-target" data-mode="single" title="单曲循环">🔂</button>
-                <button class="playmode-btn ripple-target" data-mode="shuffle" title="随机播放">🔀</button>
+        <div class="playlist-main" data-page-node-id="EvMW0Z2HJtTtCAz7n6sSij">
+          <div class="playlist-bar" data-page-node-id="HTCSdDIAtQEOO7klHO0Mbl">
+            <div class="playlist-top-row" data-page-node-id="0kO0Ey035QJahW1Mkq9uDG">
+              <span id="playlist-info" class="playlist-info" data-page-node-id="n8BUPRx5UiqXsWPMCyl52f">搜索结果列表</span>
+              <div class="playmode-row" data-page-node-id="9SqMBXVDLTAVPzSbL1N5Ag">
+                <button class="playmode-btn active ripple-target" data-mode="list" title="列表循环" data-page-node-id="xWk0e2UOSLuzZBPT4uaYLj">🔁</button>
+                <button class="playmode-btn ripple-target" data-mode="single" title="单曲循环" data-page-node-id="FUbM7PIIR2IuxuEct3s1rO">🔂</button>
+                <button class="playmode-btn ripple-target" data-mode="shuffle" title="随机播放" data-page-node-id="5fOsTiyefwCYQmvHaCjr1u">🔀</button>
               </div>
             </div>
-            <div id="playlist-select-row" class="playlist-select-row" style="display:none;">
-              <div class="playlist-select-tools">
-                <select id="playlist-select"></select>
-                <button id="add-current-btn" class="btn btn-secondary btn-icon ripple-target" title="把当前歌曲加入歌单">＋</button>
-                <button id="delete-playlist-btn" class="btn btn-ghost ripple-target" data-i18n="deletePlaylist">删除歌单</button>
+            <div id="playlist-select-row" class="playlist-select-row" style="display:none;" data-page-node-id="8JOuezfXD2JzUfu36WkHHp">
+              <div class="playlist-select-tools" data-page-node-id="HtjOlBHtHXkLuQgHoKAVa6">
+                <select id="playlist-select" data-page-node-id="SQVj2EsmWRV6Ge5M3Dim2E"><option value="">暂无歌单</option></select>
+                <button id="add-current-btn" class="btn btn-secondary btn-icon ripple-target" title="把当前歌曲加入歌单" data-page-node-id="3Dhkjruj8sw7CzQyCByuF1">＋</button>
+                <button id="delete-playlist-btn" class="btn btn-ghost ripple-target" data-i18n="deletePlaylist" data-page-node-id="03J2iqDzsVPMppwEYEgTj0">删除歌单</button>
               </div>
-              <div class="playlist-file-actions">
-                <button id="new-playlist-btn" class="btn btn-ghost ripple-target" data-i18n="newPlaylist">新建歌单</button>
-                <button id="import-playlist-btn" class="btn btn-ghost ripple-target" data-i18n="importPlaylist">导入歌单</button>
-                <button id="export-playlist-btn" class="btn btn-ghost ripple-target" data-i18n="exportPlaylist">导出歌单</button>
-                <input id="import-playlist-input" type="file" accept="application/json,.json" style="display:none;" />
+              <div class="playlist-file-actions" data-page-node-id="SEx2ugWDV1H6cLQn4300vP">
+                <button id="new-playlist-btn" class="btn btn-ghost ripple-target" data-i18n="newPlaylist" data-page-node-id="qkcaWH4Fnb5r8dabClt66m">新建歌单</button>
+                <button id="import-playlist-btn" class="btn btn-ghost ripple-target" data-i18n="importPlaylist" data-page-node-id="uSv1xTlgQCmxA5DJksrvGE">导入歌单</button>
+                <button id="export-playlist-btn" class="btn btn-ghost ripple-target" data-i18n="exportPlaylist" data-page-node-id="CxQ5FX2aCSu4vZBC5uJBNM">导出歌单</button>
+                <input id="import-playlist-input" type="file" accept="application/json,.json" style="display:none;" data-page-node-id="4uwX2wmFAK2GbsxsXfFNPg">
               </div>
             </div>
           </div>
-          <div id="playlist-list" class="playlist-list"></div>
+          <div id="playlist-list" class="playlist-list" data-page-node-id="BG8YeJcRXrxrjS0m3CKc5w"></div>
         </div>
       </section>
     </main>
 
-    <footer>
-      <span data-i18n="footerText">本站仅作为学习演示，音乐版权归各平台与原作者所有。</span>
+    <footer data-page-node-id="FfAs5YURMJPABsmZGhqjzF">
+      <span data-i18n="footerText" data-page-node-id="fvSIeqIqAyuSwTouHFV3Uv">本站仅作为学习演示，音乐版权归各平台与原作者所有。</span>
     </footer>
   </div>
 
   <!-- 歌单弹窗 -->
-  <div id="playlist-modal" class="modal-backdrop">
-    <div class="modal ripple-target">
-      <div class="modal-header">
-        <div class="modal-title-wrap">
-          <div class="modal-title-icon">🎵</div>
-          <span data-i18n="modalNewPlaylistTitle">新建歌单</span>
+  <div id="playlist-modal" class="modal-backdrop" data-page-node-id="y0x50Jlu9xeoocNlLpjvIh">
+    <div class="modal ripple-target" data-page-node-id="EmKzvBH5kUHamKFYnXSm2w">
+      <div class="modal-header" data-page-node-id="6z19xm5Z55OFCcQj1M9JCV">
+        <div class="modal-title-wrap" data-page-node-id="mwH6zDLSkh4uLAiTtXJ1Zm">
+          <div class="modal-title-icon" data-page-node-id="ngFIMEuKpyCToBzB2gKvQo">🎵</div>
+          <span data-i18n="modalNewPlaylistTitle" data-page-node-id="F8YFdzgMVtQzu94YyItT3Y">新建歌单</span>
         </div>
-        <button id="playlist-close" class="modal-close-btn">×</button>
+        <button id="playlist-close" class="modal-close-btn" data-page-node-id="ziroPh58lUOBVQ6Vz68G3Q">×</button>
       </div>
-      <p class="modal-desc" data-i18n="modalNewPlaylistDesc">给你的歌单取一个可爱的名字吧～</p>
-      <input id="playlist-name-input" type="text" placeholder="例如：通勤歌单 / 宝可梦歌单" />
-      <div class="modal-actions">
-        <button id="playlist-cancel-btn" class="btn btn-ghost ripple-target" data-i18n="modalCancel">取消</button>
-        <button id="playlist-confirm-btn" class="btn btn-secondary ripple-target" data-i18n="modalConfirm">确定</button>
+      <p class="modal-desc" data-i18n="modalNewPlaylistDesc" data-page-node-id="UmmDQobLwn6lQtTVLUf7V8">给你的歌单取一个可爱的名字吧～</p>
+      <input id="playlist-name-input" type="text" placeholder="例如：通勤歌单 / 宝可梦歌单" data-page-node-id="LRjnk7stdE6HFliFtVjiUL">
+      <div class="modal-actions" data-page-node-id="dc63pI2NdiM3EZMRdUEodJ">
+        <button id="playlist-cancel-btn" class="btn btn-ghost ripple-target" data-i18n="modalCancel" data-page-node-id="OaCacwIXNShqxp0wSVGNHd">取消</button>
+        <button id="playlist-confirm-btn" class="btn btn-secondary ripple-target" data-i18n="modalConfirm" data-page-node-id="4p9KXxsEdjJR1sp0IQV1Gu">确定</button>
       </div>
     </div>
   </div>
 
   <!-- 快捷键说明弹窗 -->
-  <div id="shortcut-modal" class="modal-backdrop">
-    <div class="modal ripple-target">
-      <div class="modal-header">
-        <div class="modal-title-wrap">
-          <div class="modal-title-icon">⌨️</div>
-          <span data-i18n="shortcutPanelTitle">快捷键说明</span>
+  <div id="shortcut-modal" class="modal-backdrop" data-page-node-id="4KzFHXidwllQsmH4omMkFb">
+    <div class="modal ripple-target" data-page-node-id="b013vM6WY2uHZLmNtUNpeN">
+      <div class="modal-header" data-page-node-id="TsrFgJx8zv3EeHHLpCy0aZ">
+        <div class="modal-title-wrap" data-page-node-id="hKmJ0StuTMrpUtTzD5UZvz">
+          <div class="modal-title-icon" data-page-node-id="wZlvVi4Bs7xdYRIs3QZkkS">⌨️</div>
+          <span data-i18n="shortcutPanelTitle" data-page-node-id="docmd99RMqJ28HkDQQpAup">快捷键说明</span>
         </div>
-        <button id="shortcut-close" class="modal-close-btn">×</button>
+        <button id="shortcut-close" class="modal-close-btn" data-page-node-id="04SkxUiVsZmsBf2YDKP7W8">×</button>
       </div>
-      <p class="modal-desc" data-i18n="shortcutPanelDesc">
-        使用键盘可以更加方便地控制皮卡丘的音乐站：
-      </p>
-      <div class="shortcut-grid">
-        <div class="shortcut-card">
-          <div class="shortcut-label" data-i18n="shortcutPlayPause">播放 / 暂停</div>
-          <div class="shortcut-key"><kbd>Space</kbd></div>
+      <p class="modal-desc" data-i18n="shortcutPanelDesc" data-page-node-id="LRE9MAMtColviv3toOx2c9">使用键盘可以更加方便地控制皮卡丘的音乐站：</p>
+      <div class="shortcut-grid" data-page-node-id="IS96RHEyJlFZYw9C9KMXq3">
+        <div class="shortcut-card" data-page-node-id="04jaGOuXGnbJm3xFl0ixEj">
+          <div class="shortcut-label" data-i18n="shortcutPlayPause" data-page-node-id="PFN0apVSJjSlSoUkBNSNNw">播放 / 暂停</div>
+          <div class="shortcut-key" data-page-node-id="ZgAQPDg4daZUMLihUTvFoV"><kbd data-page-node-id="fPO9AGPAlVofHgMeuV1PPb">Space</kbd></div>
         </div>
-        <div class="shortcut-card">
-          <div class="shortcut-label" data-i18n="shortcutSeek">快退 / 快进 5 秒</div>
-          <div class="shortcut-key"><kbd>←</kbd><kbd>→</kbd></div>
+        <div class="shortcut-card" data-page-node-id="OHbDCX6o9EIKaBpjlVaHDk">
+          <div class="shortcut-label" data-i18n="shortcutSeek" data-page-node-id="cEYvGDXeanES9CishRPvA7">快退 / 快进 5 秒</div>
+          <div class="shortcut-key" data-page-node-id="hcEH0T17QAMaAHQWiTBsaE"><kbd data-page-node-id="hNsOKBJJYIN0zEknGLnWC0">←</kbd><kbd data-page-node-id="stX0ZUigZiwpWZjcWI5qOb">→</kbd></div>
         </div>
-        <div class="shortcut-card">
-          <div class="shortcut-label" data-i18n="shortcutVolume">音量加 / 减</div>
-          <div class="shortcut-key"><kbd>↑</kbd><kbd>↓</kbd></div>
+        <div class="shortcut-card" data-page-node-id="bobzjUEYZn3bptS4PxEWzd">
+          <div class="shortcut-label" data-i18n="shortcutVolume" data-page-node-id="p08L8JHPvc3c59gOsdMj7N">音量加 / 减</div>
+          <div class="shortcut-key" data-page-node-id="R2vPcRF5EFhzEfGxUGYB7Y"><kbd data-page-node-id="JvffDC9jLSQU6KMs3m2DWl">↑</kbd><kbd data-page-node-id="WBi6DtNpRDZhf8rV6duJBL">↓</kbd></div>
         </div>
-        <div class="shortcut-card">
-          <div class="shortcut-label" data-i18n="shortcutPrevNext">上一首 / 下一首</div>
-          <div class="shortcut-key"><kbd>P</kbd><kbd>N</kbd></div>
+        <div class="shortcut-card" data-page-node-id="G4CD0Wu5e613j22tFA2FbY">
+          <div class="shortcut-label" data-i18n="shortcutPrevNext" data-page-node-id="BdpOqvq3DPJSy75JMZFjIk">上一首 / 下一首</div>
+          <div class="shortcut-key" data-page-node-id="oJ1n8dxEoKpMBYvluJ8GaV"><kbd data-page-node-id="eaq8knvMNKaKTGsGTxb0Ll">P</kbd><kbd data-page-node-id="oSkJAq065FqnqXGqrjJ3bi">N</kbd></div>
         </div>
-        <div class="shortcut-card">
-          <div class="shortcut-label" data-i18n="shortcutFav">收藏 / 取消收藏</div>
-          <div class="shortcut-key"><kbd>F</kbd></div>
+        <div class="shortcut-card" data-page-node-id="TNTBfTzl1CuiLKgrqPTclm">
+          <div class="shortcut-label" data-i18n="shortcutFav" data-page-node-id="YL1Q7cuk4s915vF7Ubc2Jy">收藏 / 取消收藏当前歌曲</div>
+          <div class="shortcut-key" data-page-node-id="YrQG0OviPjV7MfH6eBHk75"><kbd data-page-node-id="Ez1PSZQ4veioBDY1W5UFyb">F</kbd></div>
         </div>
-        <div class="shortcut-card">
-          <div class="shortcut-label" data-i18n="shortcutLyricsFX">切换歌词炫酷效果</div>
-          <div class="shortcut-key"><kbd>L</kbd></div>
+        <div class="shortcut-card" data-page-node-id="bHWQgfdfBkAnzf2AHg27De">
+          <div class="shortcut-label" data-i18n="shortcutLyricsFX" data-page-node-id="o7HryDUfqOtlEgUKfe7yzx">切换歌词炫酷效果</div>
+          <div class="shortcut-key" data-page-node-id="1c9ta6phStYN6CwOhO04NW"><kbd data-page-node-id="9KXStu8MULJQe8ECJzQSlH">L</kbd></div>
         </div>
-        <div class="shortcut-card">
-          <div class="shortcut-label" data-i18n="shortcutMute">静音 / 取消静音</div>
-          <div class="shortcut-key"><kbd>M</kbd></div>
+        <div class="shortcut-card" data-page-node-id="wNluic1WCWEozz3lkSQnU3">
+          <div class="shortcut-label" data-i18n="shortcutMute" data-page-node-id="OmvlHiHIl6qsN52su1tC12">静音 / 取消静音</div>
+          <div class="shortcut-key" data-page-node-id="CHRK9RPIgeNDzGRKHpZFAV"><kbd data-page-node-id="8vnZ353jaKOqnYnjNTZdCI">M</kbd></div>
         </div>
-        <div class="shortcut-card">
-          <div class="shortcut-label" data-i18n="shortcutFocusSearch">聚焦搜索框</div>
-          <div class="shortcut-key"><kbd>/</kbd></div>
+        <div class="shortcut-card" data-page-node-id="yqIzm50UjQKc6F6o7WMtgf">
+          <div class="shortcut-label" data-i18n="shortcutFocusSearch" data-page-node-id="51B7AWHlxdgXpNFYKS8FEA">聚焦搜索框</div>
+          <div class="shortcut-key" data-page-node-id="8C2fn2LMviJTdle97vzDQU"><kbd data-page-node-id="9B9lC8fHiU6K6Lc6iLLwtA">/</kbd></div>
         </div>
       </div>
-      <p class="modal-desc" style="margin-top:10px;" data-i18n="shortcutCloseModal">
-        提示：按 Esc 可以关闭弹窗。
-      </p>
+      <p class="modal-desc" style="margin-top:10px;" data-i18n="shortcutCloseModal" data-page-node-id="r2yLrkeDHKiRtDFe5QC3dW">提示：按 Esc 可以关闭弹窗。</p>
     </div>
   </div>
 
-  <div id="toast"></div>
+  <div id="toast" data-page-node-id="tdL8r8mW6AQbapJk6ZUJOS"></div>
 
   <script>
   (function(){
@@ -1568,6 +1589,12 @@
         toastNeedKeyword:"请先输入搜索关键词。",
         toastSearchError:"搜索时发生了一点小错误，请稍后再试。",
         toastPlayError:"播放失败，请稍后再试。",
+        toastAudioUnavailable:"这首歌暂时拿不到播放地址（音源接口限制），换一首或换个音源吧。",
+        toastSourceEmpty:"有音源没有返回结果，可能是接口限流，稍后再试。",
+        searchStatusEmpty:"没有搜到结果，换个关键词或稍后再试。",
+        searchStatusPartial:"搜索完成（部分音源无结果）",
+        playerStatusUnavailable:"无播放地址",
+        badgeNoAudio:"无音源",
         toastLyricStyleSwitched:"已切换歌词炫酷效果。",
         toastDownloadNotReady:"当前歌曲还未加载完成，稍后再试。",
         toastPlaylistCreated:"歌单创建成功。",
@@ -1649,6 +1676,12 @@
         toastNeedKeyword:"Please enter a search keyword first.",
         toastSearchError:"An error occurred while searching.",
         toastPlayError:"Playback failed. Please try again.",
+        toastAudioUnavailable:"No playable URL for this track (source API limitation). Try another track or source.",
+        toastSourceEmpty:"Some sources returned no results (possible rate limiting). Try again later.",
+        searchStatusEmpty:"No results found. Try another keyword or retry later.",
+        searchStatusPartial:"Search completed (some sources returned nothing)",
+        playerStatusUnavailable:"No audio",
+        badgeNoAudio:"No audio",
         toastLyricStyleSwitched:"Lyrics FX toggled.",
         toastDownloadNotReady:"Song not fully loaded yet. Try again later.",
         toastPlaylistCreated:"Playlist created.",
@@ -1758,6 +1791,10 @@
         : 'e.g. Commute mix / Pokemon list';
       if(dom.playlistSelect) renderPlaylistOptions();
       updatePlaylistInfoLabel();
+      // 修复：搜索结果/播放列表是 JS 动态渲染的，里面也有音源名等文案，
+      // 只刷新 [data-i18n] 元素会导致切换语言后这两块仍是旧语言。
+      if(dom.searchMiniList) renderMiniSearchList();
+      if(dom.playlistList) renderPlaylistList();
     }
 
     // ========== 旧的质量映射函数，暂时保留（不再使用 API 的 quality 字段） ==========
@@ -1786,8 +1823,25 @@
       if (losslessExts.includes(ext)) {
         return {tag:'lossless', label:'LOSSLESS'};
       }
-      // 其他一律当作 320K 显示
-      return {tag:'320k', label:'320K'};
+      // 修复：原来不管实际码率一律显示"320K"，属于虚标。
+      // 对没有扩展名的中转链接（例如网易云的 meting 代理）无法判断码率，改为如实显示格式。
+      if(ext==='mp3')  return {tag:'320k', label:'320K'};
+      if(ext==='ogg')  return {tag:'320k', label:'OGG'};
+      if(ext==='m4a'||ext==='aac') return {tag:'aac', label:'AAC'};
+      if(!ext)         return {tag:'mp3',  label:'MP3'};
+      return {tag:'normal', label:'HQ'};
+    }
+
+    // 新增：部分音源（如酷我）返回的是 http 直链，页面跑在 https 下会被浏览器
+    // 当作混合内容直接拦掉，这里在 https 环境统一升级为 https（实测 CDN 支持）。
+    function pickPlayableUrl(rawUrl){
+      if(!rawUrl) return null;
+      const u=String(rawUrl).trim();
+      if(!u) return null;
+      if(window.location.protocol==='https:' && u.toLowerCase().startsWith('http://')){
+        return 'https://'+u.slice(7);
+      }
+      return u;
     }
 
     // ===================== 歌单缓存 / 导出 =====================
@@ -2269,25 +2323,38 @@
 
       const kw=state.searchKeyword;
       const tasks=[];
+      const taskSources=[];
       for(const s of enabled){
         const limit=state.perSourceCurrentLimit[s]||state.perSourceLimit;
         if(s==='netease')tasks.push(searchNetease(kw, state.perSourcePage.netease || 1, state.perSourceLimit));
-        if(s==='qq')tasks.push(searchQQ(kw,limit));
-        if(s==='kuwo')tasks.push(searchKuwo(kw,limit));
-        if(s==='joox')tasks.push(searchJoox(kw,limit));
+        else if(s==='qq')tasks.push(searchQQ(kw,limit));
+        else if(s==='kuwo')tasks.push(searchKuwo(kw,limit));
+        else if(s==='joox')tasks.push(searchJoox(kw,limit));
+        else continue;
+        taskSources.push(s);
       }
       let added=0;
+      // 新增：记录哪些音源"零结果"，用于区分"真的没搜到"和"接口被限流"
+      let emptySources=[];
       try{
         const res=await Promise.all(tasks);
         added=res.reduce((a,b)=>a+(b||0),0);
+        emptySources=taskSources.filter((s,i)=>(res[i]||0)===0);
       }catch(e){
         console.error(e);
         showToast(t('toastSearchError'));
       }
 
       state.searchInProgress=false;
-      dom.searchStatus.textContent=t('searchStatusDone');
       dom.searchCount.textContent=state.searchResults.length.toString();
+      // 修复：原来无论结果多少都只显示"搜索完成"，0 结果时用户不知道发生了什么
+      if(!state.searchResults.length){
+        dom.searchStatus.textContent=t('searchStatusEmpty');
+      }else if(emptySources.length){
+        dom.searchStatus.textContent=t('searchStatusPartial');
+      }else{
+        dom.searchStatus.textContent=t('searchStatusDone');
+      }
       renderMiniSearchList();
       renderPlaylistList();
       if(!state.currentTrack && state.searchResults.length){
@@ -2296,6 +2363,9 @@
       if(!reset){
         if(added===0){state.noMoreResults=true;showToast(t('toastNoMore'));}
         else state.noMoreResults=false;
+      }else if(emptySources.length && state.searchResults.length){
+        // 新的搜索里若有音源零结果，多半是接口限流，给个明确提示
+        showToast(t('toastSourceEmpty'));
       }
     }
 
@@ -2341,6 +2411,8 @@
         }
       }
 
+      // 修复：拿不到播放地址时明确标记，便于 UI 提示
+      track.unavailable = !track.audioUrl;
       track.detailsLoaded=true;
     }
 
@@ -2425,6 +2497,11 @@
         }
         }
 
+        // 修复：tang 接口目前对任何歌曲都返回空的 song_play_url* 字段，
+        // 即 QQ 音源搜得到但放不了。这里明确标记，交由 playTrack 给出可读提示，
+        // 而不是让 <audio> 静默失败。
+        track.unavailable = !track.audioUrl;
+
         track.detailsLoaded = true;
     } catch (e) {
         console.error('qq detail (tang)', e);
@@ -2432,36 +2509,68 @@
     }
     }
 
+    /* ============================================================
+       酷我详情：OIAPI
+       ------------------------------------------------------------
+       修复说明（实测结论）：
+       原代码固定使用 br=1 取 FLAC 直链，但酷我目前对所有 br=1 的 FLAC 直链
+       都返回 410 Gone（连续多次实测 100% 复现），因此酷我音源永远播不出声
+       （<audio> 报 MEDIA_ERR_SRC_NOT_SUPPORTED = 4）。
+       改为按"可用码率"顺序回退，默认优先 MP3 320K，实测 br=4 稳定返回 206。
+       ============================================================ */
+    const KUWO_BR_CHAIN = [4, 2, 3, 5, 1]; // 4=MP3 320K 2=OGG 300K 3=OGG 100K 5=AAC 48K 1=FLAC(常被拒)
+
+    function kuwoQualityFromMeta(level, format, bitrate){
+      const l=(level||'').toString().toLowerCase();
+      const f=(format||'').toString().toLowerCase();
+      if(l==='ff' || /flac|ape|wav|alac|aiff/.test(f)) return {tag:'lossless', label:'LOSSLESS'};
+      const kb=parseInt(bitrate,10);
+      if(kb>0) return {tag:kb+'k', label:kb+'K'};
+      return {tag:null, label:null};
+    }
+
     async function fetchKuwoDetails(track){
       const n=track.displayIndex || 1;
-      const api=`https://oiapi.net/api/Kuwo?msg=${encodeURIComponent(track.keyword)}&n=${encodeURIComponent(n)}&br=1`;
-      const res=await fetch(api);
-      const j=await res.json();
-      if(!j || !j.data || Array.isArray(j.data)) throw new Error('kuwo OIAPI detail failed');
+      let lastError=null;
 
-      const d=j.data;
-      Object.assign(track,{
-        title:d.song || track.title,
-        artist:d.singer || track.artist,
-        album:d.album || track.album,
-        cover:d.picture || track.cover,
-        songid:(d.rid ?? track.songid),
-        audioUrl:d.url || track.audioUrl,
-        lrc:d.lyric || d.lrc || d.lyrics || track.lrc || null,
-        lrcUrl:null,
-        detailsLoaded:true
-      });
+      for(const br of KUWO_BR_CHAIN){
+        try{
+          const api=`https://oiapi.net/api/Kuwo?msg=${encodeURIComponent(track.keyword)}&n=${encodeURIComponent(n)}&br=${br}`;
+          const res=await fetch(api);
+          const j=await res.json();
+          if(!j || !j.data || Array.isArray(j.data)) throw new Error('kuwo OIAPI detail failed');
 
-      // OIAPI br=1 请求无损；优先根据接口返回的 level / format 判断，URL 后缀作为兜底
-      const qualityText=`${d.level||''} ${d.format||''}`.toLowerCase();
-      if(/lossless|无损|flac|wav|ape|alac|aiff|zp|sq/.test(qualityText)){
-        track.quality='lossless';
-        track.qualityLabel='LOSSLESS';
-      }else if(track.audioUrl){
-        const q=inferQualityFromUrl(track.audioUrl);
-        track.quality=q.tag;
-        track.qualityLabel=q.label;
+          const d=j.data;
+          const audioUrl=pickPlayableUrl(d.url);
+          if(!audioUrl) throw new Error('kuwo empty url (br='+br+')');
+
+          const q=kuwoQualityFromMeta(d.level, d.format, d.bitrate) || {tag:null, label:null};
+
+          Object.assign(track,{
+            title:d.song || track.title,
+            artist:d.singer || track.artist,
+            album:d.album || track.album,
+            cover:d.picture || track.cover,
+            songid:(d.rid ?? track.songid),
+            audioUrl,
+            lrc:d.lyric || d.lrc || d.lyrics || track.lrc || null,
+            lrcUrl:null,
+            quality:q.tag,
+            qualityLabel:q.label,
+            unavailable:false,
+            detailsLoaded:true
+          });
+          return;
+        }catch(e){
+          lastError=e;
+          console.warn('kuwo detail failed (br='+br+')', e && e.message);
+        }
       }
+
+      // 所有码率都拿不到地址：明确标记为不可播放，让 UI 给出提示而不是静默失败
+      console.warn('kuwo detail: 没有拿到可用播放地址', lastError);
+      track.unavailable=true;
+      track.detailsLoaded=true;
     }
 
     async function fetchJooxDetails(track){
@@ -2544,15 +2653,22 @@
         track.quality=q.tag;
         track.qualityLabel=q.label;
       }
+
+      // 修复：所有候选链接都探测失败时标记为不可播放
+      track.unavailable = !track.audioUrl;
     }
 
     async function ensureTrackDetails(track){
       if(track.detailsLoaded && track.audioUrl && (track.lrc || !track.lrcUrl)) return;
+      // 修复：已确认拿不到播放地址的曲目不再重复请求接口；重新搜索/刷新后会重新尝试
+      if(track.unavailable) return;
       dom.playerStatus.textContent=t('playerStatusLoading');
       if(track.source==='netease') await fetchNeteaseDetails(track);
       else if(track.source==='kuwo') await fetchKuwoDetails(track);
       else if(track.source==='joox') await fetchJooxDetails(track);
       else await fetchQQDetails(track);
+      // 拿到地址后统一做一次 http->https 升级，避免 https 页面下的混合内容拦截
+      if(track.audioUrl) track.audioUrl=pickPlayableUrl(track.audioUrl);
     }
 
     // ===================== 歌词处理 =====================
@@ -2662,10 +2778,11 @@
         dom.trackSourcePill.appendChild(dot);
         dom.trackSourcePill.appendChild(txt);
 
-        // 显示音质：LOSSLESS 或 320K（根据 qualityLabel）
+        // 显示音质：LOSSLESS / 320K / 192K…（非无损使用蓝色样式，不再套用无损的绿色）
         if (track.qualityLabel) {
           dom.trackQualityPill.style.display = 'inline-block';
           dom.trackQualityPill.textContent = track.qualityLabel;
+          dom.trackQualityPill.className = 'lossless-pill' + (track.quality === 'lossless' ? '' : ' normal');
         } else {
           dom.trackQualityPill.style.display = 'none';
         }
@@ -2692,7 +2809,25 @@
         applyUI();
         state.lyricLines = track.lrc ? parseLRC(track.lrc) : [];
         renderLyrics();
-        if(!track.audioUrl){showToast(t('toastPlayError'));dom.playerStatus.textContent=t('playerStatusIdle');return;}
+        // 修复：区分"接口没给播放地址"和"播放失败"，给出可读原因
+        if(!track.audioUrl){
+          track.unavailable=true;
+          // 修复：切到无音源的歌时，不要让上一首继续在后台播放
+          try{dom.audio.pause();}catch(e){}
+          dom.audio.removeAttribute('src');
+          try{dom.audio.load();}catch(e){}
+          state.isPlaying=false;
+          state.lyricLines=[];
+          renderLyrics();
+          dom.playBtn.textContent='▶';
+          dom.currentTime.textContent='00:00';
+          dom.totalTime.textContent='00:00';
+          dom.progressBar.style.transform='scaleX(0)';
+          dom.progressHandle.style.left='0px';
+          dom.playerStatus.textContent=t('playerStatusUnavailable');
+          showToast(t('toastAudioUnavailable'));
+          return;
+        }
         dom.audio.src=track.audioUrl;
         await dom.audio.play();
         state.isPlaying=true;
@@ -2702,10 +2837,11 @@
         console.error(e);
         showToast(t('toastPlayError'));
         dom.playerStatus.textContent=t('playerStatusIdle');
+      }finally{
+        // 无论成功还是失败都要刷新列表，让"无音源"标记及时出现
+        renderMiniSearchList();
+        renderPlaylistList();
       }
-
-      renderMiniSearchList();
-      renderPlaylistList();
     }
 
     function getActiveList(){
@@ -2765,6 +2901,33 @@
         idx = (idx + (direction==='prev'?-1:1) + list.length) % list.length;
       }
       playFromList(state.playContext.type,idx,state.playContext.playlistId);
+    }
+
+    // 新增：一首播完后自动切歌时，跳过已知拿不到播放地址的曲目，
+    // 否则遇到无音源的歌会反复失败卡住。
+    function playNextAuto(){
+      const list=getActiveList();
+      if(!list.length)return;
+      if(state.playMode==='single'){ playNext('next'); return; }
+
+      const total=list.length;
+      let idx=state.playContext.index ?? -1;
+      if(idx<0||idx>=total)idx=-1;
+
+      for(let step=0;step<total;step++){
+        if(state.playMode==='shuffle'){
+          idx = total===1 ? 0 : Math.floor(Math.random()*total);
+        }else{
+          idx = (idx+1)%total;
+        }
+        const cand=list[idx];
+        if(cand && !cand.unavailable){
+          playFromList(state.playContext.type, idx, state.playContext.playlistId);
+          return;
+        }
+      }
+      // 整个列表都没有可用音源
+      dom.playerStatus.textContent=t('playerStatusIdle');
     }
 
     function togglePlayPause(){
@@ -2881,6 +3044,14 @@
         src.appendChild(dot);src.appendChild(txt);
         right.appendChild(badge);right.appendChild(src);
         item.appendChild(meta);item.appendChild(right);
+        // 已确认拿不到播放地址的曲目加标记，避免用户反复点
+        if(track.unavailable){
+          item.classList.add('unavailable');
+          const na=document.createElement('span');
+          na.className='no-audio-badge';
+          na.textContent=t('badgeNoAudio');
+          ar.appendChild(na);
+        }
         item.addEventListener('click',()=>{
           const visible=getInterleavedSearchList();
           const idx=visible.findIndex(x=>x.uid===track.uid);
@@ -2950,6 +3121,14 @@
                  track.source==='joox'?'sourceJoox':'sourceKuwo';
         const txt=document.createElement('span'); txt.textContent=t(key);
         sSpan.appendChild(dot);sSpan.appendChild(txt);
+        // 已确认拿不到播放地址的曲目加标记
+        if(track.unavailable){
+          item.classList.add('unavailable');
+          const na=document.createElement('span');
+          na.className='no-audio-badge';
+          na.textContent=t('badgeNoAudio');
+          sSpan.appendChild(na);
+        }
         sub.appendChild(aSpan);sub.appendChild(sSpan);
         meta.appendChild(title);meta.appendChild(sub);
 
@@ -3040,7 +3219,9 @@
     }
     function requestMoreResults(){
       const enabled=Object.keys(state.enabledSources).filter(k=>state.enabledSources[k]);
-      if(!enabled.length)return;
+      if(!enabled.length){showToast(t('searchStatusNoSource'));return;}
+      if(!state.searchKeyword)return;
+      if(state.searchInProgress)return;
 
       enabled.forEach(src=>{
         if(src==='netease'){
@@ -3229,22 +3410,18 @@
 
       dom.limitSelect.addEventListener('change',()=>{
         state.perSourceLimit=parseInt(dom.limitSelect.value,10)||10;
+        // 修复：改了"每个源加载 N 首"之后，各源已累计的条数要跟着重置，
+        // 否则下一次"加载更多"仍会基于旧基数累加
+        Object.keys(state.perSourceCurrentLimit)
+          .forEach(k=>{state.perSourceCurrentLimit[k]=state.perSourceLimit;});
       });
 
       dom.loadMoreBtn.addEventListener('click',()=>{
-        const enabled=Object.keys(state.enabledSources).filter(k=>state.enabledSources[k]);
-        if(!enabled.length){showToast(t('searchStatusNoSource'));return;}
-
-        enabled.forEach(s=>{
-          if(s==='netease'){
-            state.perSourcePage.netease = (state.perSourcePage.netease || 1) + 1;
-          }else{
-            state.perSourceCurrentLimit[s]=(state.perSourceCurrentLimit[s]||state.perSourceLimit)+state.perSourceLimit;
-          }
-        });
-
+        // 修复：原来这里和 requestMoreResults() 是两份重复实现，统一走同一个入口
+        if(!state.searchKeyword){showToast(t('toastNeedKeyword'));return;}
+        if(state.searchInProgress)return;
         state.noMoreResults=false;
-        searchAllSources(false);
+        requestMoreResults();
       });
 
       dom.searchMiniList.addEventListener('scroll',()=>{
@@ -3281,7 +3458,8 @@
           const r=cur/dur;
           dom.progressBar.style.transform='scaleX('+r+')';
           const w=dom.progressWrapper.clientWidth;
-          dom.progressHandle.style.left=(w*r)+'px';
+          // 修复：位置做一下边界收敛，避免手柄跑到轨道外
+          dom.progressHandle.style.left=Math.max(0,Math.min(w,w*r))+'px';
         }
         const intensity = Math.abs(Math.sin(cur * 2.3));
         audioLevel = 0.3 + 0.7 * intensity * (dom.audio.volume || 1);
@@ -3300,7 +3478,8 @@
       });
       dom.audio.addEventListener('ended',()=>{
         audioLevel = 0;
-        playNext('next');
+        // 用 playNextAuto 自动跳过没有可用音源的曲目
+        playNextAuto();
       });
 
       dom.progressWrapper.addEventListener('click',e=>{
@@ -3358,8 +3537,13 @@
       });
 
       document.addEventListener('keydown',e=>{
-        const tag=document.activeElement.tagName.toLowerCase();
-        const typing=(tag==='input'||tag==='textarea');
+        // 修复：document.activeElement 在极端情况下可能为 null；同时把 select/可编辑元素也算作"正在输入"
+        const ae=document.activeElement;
+        const tag=ae && ae.tagName ? ae.tagName.toLowerCase() : '';
+        const typing=(tag==='input'||tag==='textarea'||tag==='select'||!!(ae && ae.isContentEditable));
+        // 修复：焦点在按钮/链接上时，Space 应由控件自己处理，
+        // 否则会同时触发"按钮点击"和"播放/暂停"两个动作
+        const onControl=(tag==='button'||tag==='a');
         const playlistOpen=dom.playlistModal.classList.contains('show');
         const shortcutOpen=dom.shortcutModal.classList.contains('show');
 
@@ -3373,7 +3557,7 @@
           return;
         }
 
-        if(e.code==='Space'&&!typing){e.preventDefault();togglePlayPause();}
+        if(e.code==='Space'&&!typing&&!onControl){e.preventDefault();togglePlayPause();}
         if(e.key==='ArrowRight'&&!typing){dom.audio.currentTime=(dom.audio.currentTime||0)+5;}
         if(e.key==='ArrowLeft'&&!typing){dom.audio.currentTime=Math.max(0,(dom.audio.currentTime||0)-5);}
         if(e.key==='ArrowUp'&&!typing){dom.audio.volume=Math.min(1,(dom.audio.volume||0)+0.05);dom.volumeSlider.value=dom.audio.volume;}
@@ -3413,5 +3597,6 @@
     document.addEventListener('DOMContentLoaded',init);
   })();
   </script>
-</body>
-</html>
+
+
+</body></html>
